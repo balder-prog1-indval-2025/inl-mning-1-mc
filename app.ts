@@ -1,19 +1,7 @@
 
-
 import "./app2"
 
 let board = new Grid(8, 8, 350, 40, 500, 500)
-
-// Draw column labels (A-H)
-for (let i = 65; i <= 72; i++) {
-    let x = i - 65
-    text(String.fromCharCode(i), 374 + x * 62, 35, 25)
-}
-
-// Draw row labels (1-8)
-for (let i = 0; i < 8; i++) {
-    text(i + 1, 332, 76 + i * 63, 25)
-}
 
 // Color the board
 for (let i = 0; i < 8; i++) {
@@ -284,6 +272,16 @@ let dragging = false
 update = () => {
     clear()
     board.draw()
+    // Draw column labels (A-H)
+for (let i = 65; i <= 72; i++) {
+    let x = i - 65
+    text(String.fromCharCode(i), 374 + x * 62, 35, 25)
+}
+
+// Draw row labels (1-8)
+for (let i = 0; i < 8; i++) {
+    text(i + 1, 332, 76 + i * 63, 25)
+}
     
     // Börja draga
     if (mouse.left && !dragging) {
