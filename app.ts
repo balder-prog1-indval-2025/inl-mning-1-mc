@@ -94,7 +94,7 @@ for (let i = 0; i < 8; i++) {
 }
 
 
-//  MOVEMENT RULES 
+//MOVEMENT RULES 
 
 function kanTornetFlytta(från: any, till: any): boolean {
     let frånRad = från.row
@@ -146,7 +146,7 @@ function kanLöparenFlytta(från: any, till: any): boolean {
         return false
     }
     
-    // Regel 2: Kan inte ta egen pjäs
+    // Regl 2: Kan inte ta egen pjäs
     if (till.tag && till.tag.player === från.tag.player) {
         return false
     }
