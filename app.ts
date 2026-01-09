@@ -73,6 +73,7 @@ board.cell(0,4).tag = {
     "piece": "queen"
 }
 
+//SETUP WHITE PIECES 
 let white_rook = await fetchImage("chess/white_rook.png")
 board.cell(7,0).image = white_rook
 board.cell(7,0).tag = {
