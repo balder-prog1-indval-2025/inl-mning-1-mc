@@ -232,6 +232,8 @@ function kanBondenFlytta(från: any, till: any): boolean {
         }
         return false
     }
+    // Om den kommer till slutet kan man byta pjäs
+    //switch ku
     
     return false
 }
@@ -259,6 +261,7 @@ function kanPjäsenFlytta(från: any, till: any): boolean {
     
     return false
 }
+
 
 
 // GAME LOGIC
