@@ -1,112 +1,133 @@
-import "./app.ts"
-let selectedCell = null
-let selectedPiece = null
-let dragging = false
-let dragX = 0
-let dragY = 0
-let board= new Grid(8, 8, 350, 40, 500, 500)
-update = () => {
-    clear() 
-    board.draw()
-    
-    
-    // börja draga
-    if (mouse.left && !dragging) {
-        let clickedCell = board.cellFromPoint(mouse.x, mouse.y)
-        if (clickedCell && clickedCell.image) {
-            selectedCell = clickedCell
-            selectedPiece = clickedCell.image
-            dragging = true
-            selectedCell.tag = selectedCell.color
-            selectedCell.color = "grey"
-            selectedCell.image = null
-        }
+
+let board = new Grid(8, 8, 350, 40, 500, 500)
+
+export function labelBoard(): any{
+    // Column labels (A-H)
+    for (let i = 65; i <= 72; i++) {
+        let x = i - 65
+        text(String.fromCharCode(i), 374 + x * 62, 35, 25)
     }
-    
-    // Rita bilden vid draging
-    if (dragging && selectedPiece) {
-        dragX = mouse.x - 31  
-        dragY = mouse.y - 31
-        ctx.drawImage(selectedPiece, dragX, dragY, 62, 62)
-    }
-    
-    // Sätt ner bilden
-    if (!mouse.left && dragging) {
-        let dropCell = board.cellFromPoint(mouse.x, mouse.y)
-        
-        if (dropCell) {
-            dropCell.image = selectedPiece
-        } else {
-            selectedCell.image = selectedPiece
-        }
-        
-        // till og färg
-        selectedCell.color = selectedCell.tag
-        
-        // Resetta
-        dragging = false
-        selectedCell = null
-        selectedPiece = null
+    // Row labels (1-8)
+    for (let i = 0; i < 8; i++) {
+        text(i + 1, 332, 76 + i * 63, 25)
     }
 }
 
-/*import "./app.ts"
-let selectedCell = null
-let selectedPiece = null
-let dragging = false
-let dragX = 0
-let dragY = 0
-
-
-update = () => {
-    clear() 
-    board.draw()
-    
-    
-    // börja draga
-    if (mouse.left && !dragging) {
-        let clickedCell = board.cellFromPoint(mouse.x, mouse.y)
-        if (clickedCell && clickedCell.image) {
-            selectedCell = clickedCell
-            selectedPiece = clickedCell.image
-            dragging = true
-            selectedCell.tag = selectedCell.color
-            selectedCell.color = "grey"
-            selectedCell.image = null
+export function colourBoard(): any{
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            if ((i + j) % 2 === 0) {
+                board.cell(i, j).color = "pink"
+           } else {
+                board.cell(i, j).color = "white"
+            }
         }
     }
     
-    // Rita bilden vid draging
-    if (dragging && selectedPiece) {
-        dragX = mouse.x - 31  
-        dragY = mouse.y - 31
-        ctx.drawImage(selectedPiece, dragX, dragY, 62, 62)
+}
+
+export function pieceSetup ():any {
+    //White pieces setup
+    let whiteRook = await fetchImage("chess/white_rook.png")
+    board.cell(7, 0).image = whiteRook
+    board.cell(7, 0).tag = { player: "white", piece: "rook" }
+    board.cell(7, 7).image = whiteRook
+    board.cell(7, 7).tag = { player: "white", piece: "rook" }
+
+    let whiteKnight = await fetchImage("chess/white_knight.png")
+    board.cell(7, 1).image = whiteKnight
+    board.cell(7, 1).tag = { player: "white", piece: "knight" }
+    board.cell(7, 6).image = whiteKnight
+    board.cell(7, 6).tag = { player: "white", piece: "knight" }
+
+    let whiteBishop = await fetchImage("chess/white_bishop.png")
+    board.cell(7, 2).image = whiteBishop
+    board.cell(7, 2).tag = { player: "white", piece: "bishop" }
+    board.cell(7, 5).image = whiteBishop
+    board.cell(7, 5).tag = { player: "white", piece: "bishop" }
+
+    let whiteKing = await fetchImage("chess/white_king.png")
+    board.cell(7, 4).image = whiteKing
+    board.cell(7, 4).tag = { player: "white", piece: "king" }
+
+    let whiteQueen = await fetchImage("chess/white_queen.png")
+    board.cell(7, 3).image = whiteQueen
+    board.cell(7, 3).tag = { player: "white", piece: "queen" }
+
+    // Black pieces setup
+    let blackRook = await fetchImage("chess/black_rook.png")
+    board.cell(0, 0).image = blackRook
+    board.cell(0, 0).tag = { player: "black", piece: "rook" }
+    board.cell(0, 7).image = blackRook
+    board.cell(0, 7).tag = { player: "black", piece: "rook" }
+
+    let blackKnight = await fetchImage("chess/black_knight.png")
+    board.cell(0, 1).image = blackKnight
+    board.cell(0, 1).tag = { player: "black", piece: "knight" }
+    board.cell(0, 6).image = blackKnight
+    board.cell(0, 6).tag = { player: "black", piece: "knight" }
+
+    let blackBishop = await fetchImage("chess/black_bishop.png")
+    board.cell(0, 2).image = blackBishop
+    board.cell(0, 2).tag = { player: "black", piece: "bishop" }
+    board.cell(0, 5).image = blackBishop
+    board.cell(0, 5).tag = { player: "black", piece: "bishop" }
+
+    let blackKing = await fetchImage("chess/black_king.png")
+    board.cell(0, 4).image = blackKing
+    board.cell(0, 4).tag = { player: "black", piece: "king" }
+
+    let blackQueen = await fetchImage("chess/black_queen.png")
+    board.cell(0, 3).image = blackQueen
+    board.cell(0, 3).tag = { player: "black", piece: "queen" }
+
+    // Pawn setup
+    let blackPawn = await fetchImage("chess/black_pawn.png")
+    for (let i = 0; i < 8; i++) {
+    board.cell(1, i).image = blackPawn
+    board.cell(1, i).tag = { player: "black", piece: "pawn" }
     }
-    
-    // Sätt ner bilden
 
-if (!mouse.left && dragging) {
-    let dropCell = board.cellFromPoint(mouse.x, mouse.y)
-    
-    if (dropCell && selectedCell.tag) {
-        if (kanPjäsenFlytta(selectedCell, dropCell)) {
-            dropCell.image = selectedPiece
-            dropCell.tag = selectedCell.tag
-        } else {  
-            selectedCell.image = selectedPiece
-        }
-    } else {
-        // Utanför brädet - flytta tillbaka
-        selectedCell.image = selectedPiece
+    let whitePawn = await fetchImage("chess/white_pawn.png")
+        for (let i = 0; i < 8; i++) {
+        board.cell(6, i).image = whitePawn
+        board.cell(6, i).tag = { player: "white", piece: "pawn" }
     }
-    
-    clearHighlights()
-    dragging = false
-    selectedCell = null
-    selectedPiece = null
-}}
+}
 
+// Colours
+let cyan = "#d0f5f1"
+let mintGreen = "#d0f5d5"
+let lavender = "#e5d0f5"
+let lightPink = "#f7d5ee"
+let lightBlue = "#cde1f7"
 
-function kanPjäsenFlytta(selectedCell: any, dropCell: Cell) {
-    throw new Error("Function not implemented.")
-}*/
+// floral pastel
+let floralPastel = await fetchImage("https://i.pinimg.com/736x/9b/53/9d/9b539d8d4d21840d553ba4bc0b958509.jpg")
+
+//floral pink
+let floralPink = await fetchImage ("https://i.pinimg.com/736x/d6/75/6d/d6756d4028fee69a66b8b486347f9d0c.jpg")
+
+//mint floral
+let floralMint = await fetchImage ("https://i.pinimg.com/736x/a8/cb/66/a8cb66d315083c10c7f747ad7790160e.jpg")
+
+//cherry blossom pink
+let cherryBlossom = await fetchImage("https://i.pinimg.com/474x/20/f2/30/20f230e642bc95c59ae16c8eb524ff02.jpg")
+
+//lavender cats
+let lavenderCats = await fetchImage ("https://i.pinimg.com/736x/43/f1/ea/43f1ea6ab4d782df2f7914e73be48e2e.jpg")
+
+export function loadSettings (): any{
+    let settings = new Grid (10, 1, 1200, 20, 30, 100)
+    settings.cell(0,0).color = lightPink
+    settings.cell(1,0).color = cyan
+    settings.cell(2,0).color = lavender
+    settings.cell(3,0).color = mintGreen
+    settings.cell(4,0).color = lightBlue
+    settings.cell(5,0).image = floralPastel
+    settings.cell(6,0).image = floralPink
+    settings.cell(7,0).image = floralMint
+    settings.cell(8,0).image = cherryBlossom
+    settings.cell(9,0).image = lavenderCats
+}
+
