@@ -1,8 +1,9 @@
-import { labelBoard, colourBoard, pieceSetup, loadSettings} from "./app2.ts"
+import { labelBoard, colourBoard, pieceSetup, loadSettings} from "./app2"
 
-colourBoard()
-pieceSetup()
-
+let board = new Grid(8, 8, 350, 40, 500, 500)
+let settings: Grid = loadSettings()
+colourBoard(board)
+pieceSetup(board)
 // Movement rules
 
 function canRookMove(from: any, to: any): boolean {
@@ -194,6 +195,7 @@ update = () => {
     clear()
     board.draw()
     labelBoard()
+    settings.draw()
 
     // Start dragging
     if (mouse.left && !dragging) {

@@ -1,6 +1,4 @@
 
-let board = new Grid(8, 8, 350, 40, 500, 500)
-
 export function labelBoard(): any{
     // Column labels (A-H)
     for (let i = 65; i <= 72; i++) {
@@ -13,7 +11,7 @@ export function labelBoard(): any{
     }
 }
 
-export function colourBoard(): any{
+export function colourBoard(board): any{
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if ((i + j) % 2 === 0) {
@@ -26,7 +24,7 @@ export function colourBoard(): any{
     
 }
 
-export function pieceSetup ():any {
+export async function pieceSetup (board): Promise<void> {
     //White pieces setup
     let whiteRook = await fetchImage("chess/white_rook.png")
     board.cell(7, 0).image = whiteRook
@@ -117,7 +115,7 @@ let cherryBlossom = await fetchImage("https://i.pinimg.com/474x/20/f2/30/20f230e
 //lavender cats
 let lavenderCats = await fetchImage ("https://i.pinimg.com/736x/43/f1/ea/43f1ea6ab4d782df2f7914e73be48e2e.jpg")
 
-export function loadSettings (): any{
+export function loadSettings (): Grid{
     let settings = new Grid (10, 1, 1200, 20, 30, 100)
     settings.cell(0,0).color = lightPink
     settings.cell(1,0).color = cyan
@@ -129,5 +127,6 @@ export function loadSettings (): any{
     settings.cell(7,0).image = floralMint
     settings.cell(8,0).image = cherryBlossom
     settings.cell(9,0).image = lavenderCats
+    return settings
 }
 
