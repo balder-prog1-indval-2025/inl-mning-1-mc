@@ -1,7 +1,10 @@
-import { labelBoard, colourBoard, pieceSetup, loadSettings} from "./app2.ts"
+import { labelBoard, colourBoard, pieceSetup, loadBackgrounds} from "./app2"
 
-colourBoard()
-pieceSetup()
+let board = new Grid(8, 8, 350, 40, 500, 500)
+let backgrounds: Grid = loadBackgrounds()
+
+colourBoard(board)
+pieceSetup(board)
 
 // Movement rules
 
@@ -190,10 +193,28 @@ let selectedTag: any = null
 let originalColor: string = ""
 let dragging = false
 
+let selectedBackground: any = null
+let selectedColour: any = "white"
+
 update = () => {
     clear()
     board.draw()
     labelBoard()
+    loadBackgrounds()
+    rectangle(1, 1, W, H, selectedColour)
+
+    // Picking background
+    if (mouse.left) {
+        selectedBackground = backgrounds.cellFromPoint(mouse.x, mouse.y)
+        if (selectedBackground) {
+            selectedColour = selectedBackground.color
+            rectangle(1, 1, W, H, "selecetdColour")
+        }
+    }
+
+    board.draw()
+    labelBoard()
+    loadBackgrounds()
 
     // Start dragging
     if (mouse.left && !dragging) {
@@ -240,6 +261,7 @@ update = () => {
         selectedPiece = null
         selectedTag = null
     }
+    
     
 }
 

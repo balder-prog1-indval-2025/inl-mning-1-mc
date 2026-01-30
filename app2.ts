@@ -1,6 +1,4 @@
 
-let board = new Grid(8, 8, 350, 40, 500, 500)
-
 export function labelBoard(): any{
     // Column labels (A-H)
     for (let i = 65; i <= 72; i++) {
@@ -13,7 +11,7 @@ export function labelBoard(): any{
     }
 }
 
-export function colourBoard(): any{
+export function colourBoard(board): any{
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if ((i + j) % 2 === 0) {
@@ -26,7 +24,7 @@ export function colourBoard(): any{
     
 }
 
-export function pieceSetup ():any {
+export async function pieceSetup (board): Promise<void>{
     //White pieces setup
     let whiteRook = await fetchImage("chess/white_rook.png")
     board.cell(7, 0).image = whiteRook
@@ -96,38 +94,22 @@ export function pieceSetup ():any {
 }
 
 // Colours
+let pink = "#f5d7e6"
+let yellow = "#fcfcdc"
+let green = "#d7f5df"
 let cyan = "#d0f5f1"
-let mintGreen = "#d0f5d5"
-let lavender = "#e5d0f5"
-let lightPink = "#f7d5ee"
-let lightBlue = "#cde1f7"
+let blue = "#cde1f7"
+let lavender = "#ecdcfc"
 
-// floral pastel
-let floralPastel = await fetchImage("https://i.pinimg.com/736x/9b/53/9d/9b539d8d4d21840d553ba4bc0b958509.jpg")
-
-//floral pink
-let floralPink = await fetchImage ("https://i.pinimg.com/736x/d6/75/6d/d6756d4028fee69a66b8b486347f9d0c.jpg")
-
-//mint floral
-let floralMint = await fetchImage ("https://i.pinimg.com/736x/a8/cb/66/a8cb66d315083c10c7f747ad7790160e.jpg")
-
-//cherry blossom pink
-let cherryBlossom = await fetchImage("https://i.pinimg.com/474x/20/f2/30/20f230e642bc95c59ae16c8eb524ff02.jpg")
-
-//lavender cats
-let lavenderCats = await fetchImage ("https://i.pinimg.com/736x/43/f1/ea/43f1ea6ab4d782df2f7914e73be48e2e.jpg")
-
-export function loadSettings (): any{
-    let settings = new Grid (10, 1, 1200, 20, 30, 100)
-    settings.cell(0,0).color = lightPink
-    settings.cell(1,0).color = cyan
-    settings.cell(2,0).color = lavender
-    settings.cell(3,0).color = mintGreen
-    settings.cell(4,0).color = lightBlue
-    settings.cell(5,0).image = floralPastel
-    settings.cell(6,0).image = floralPink
-    settings.cell(7,0).image = floralMint
-    settings.cell(8,0).image = cherryBlossom
-    settings.cell(9,0).image = lavenderCats
+export function loadBackgrounds (): Grid{
+    let backgrounds = new Grid(7, 1, 1200, 40, 30, 120)
+    backgrounds.cell(0, 0).color = pink
+    backgrounds.cell(1, 0).color = yellow
+    backgrounds.cell(2, 0).color = green
+    backgrounds.cell(3, 0).color = cyan
+    backgrounds.cell(4, 0).color = blue
+    backgrounds.cell(5, 0).color = lavender
+    backgrounds.cell(6, 0).color = "white"
+    return backgrounds
 }
 
