@@ -120,6 +120,8 @@ function canRookMove(from: any, to: any): boolean {
     return true
 }
 
+
+
 function canBishopMove(from: any, to: any): boolean {
     let fromRow = from.row
     let fromColumn = from.column
@@ -262,6 +264,59 @@ function canPieceMove(from: any, to: any): boolean {
     return false
 }
 
+async function promotePawn(dropCell: any, selectedTag: any) {
+    // Check if it's a pawn
+    if (selectedTag.piece !== "pawn") {
+        return  // Not a pawn, do nothing
+    }
+    
+    // White pawn reaches row 0
+    if (selectedTag.player === "white" && dropCell.row === 0) {
+        let choice = await read("Promote to: queen, rook, knight, or bishop?")
+       
+        if (choice === "queen") {
+            dropCell.image = whiteQueen
+            dropCell.tag = {player: "white", piece: "queen"}
+        } else if (choice === "rook") {
+            dropCell.image = whiteRook
+            dropCell.tag = {player: "white", piece: "rook"}
+        } else if (choice === "knight") {
+            dropCell.image = whiteKnight
+            dropCell.tag = {player: "white", piece: "knight"}
+        } else if (choice === "bishop") {
+            dropCell.image = whiteBishop
+            dropCell.tag = {player: "white", piece: "bishop"}
+        } else {
+            // Default to queen if invalid input
+            dropCell.image = whiteQueen
+            dropCell.tag = {player: "white", piece: "queen"}
+        }
+    }
+    
+    // Black pawn reaches row 7
+    if (selectedTag.player === "black" && dropCell.row === 7) {
+        let choice = await read("Promote to: queen, rook, knight, or bishop?")
+
+        if (choice === "queen") {
+            dropCell.image = blackQueen
+            dropCell.tag = {player: "black", piece: "queen"}
+        } else if (choice === "rook") {
+            dropCell.image = blackRook
+            dropCell.tag = {player: "black", piece: "rook"}
+        } else if (choice === "knight") {
+            dropCell.image = blackKnight
+            dropCell.tag = {player: "black", piece: "knight"}
+        } else if (choice === "bishop") {
+            dropCell.image = blackBishop
+            dropCell.tag = {player: "black", piece: "bishop"}
+        } else {
+            // Default to queen if invalid input
+            dropCell.image = blackQueen
+            dropCell.tag = {player: "black", piece: "queen"}
+        }
+    }
+}
+
 
 // Game logic
 
@@ -271,7 +326,9 @@ let selectedTag: any = null
 let originalColor: string = ""
 let dragging = false
 
-update = () => {
+//Turn managment
+let currentPlayer = "white" 
+update = async () => {
     clear()
     board.draw()
     // Draw column labels (A-H)
@@ -288,6 +345,12 @@ for (let i = 0; i < 8; i++) {
     // Start dragging
     if (mouse.left && !dragging) {
         let clickedCell = board.cellFromPoint(mouse.x, mouse.y)
+        if (clickedCell && clickedCell.image && clickedCell.tag){
+            if (clickedCell.tag.player !== currentPlayer){
+                text("It's " + currentPlayer+ "'s turn!!",20, 110, 26, "#913F74")
+                return}
+            }
+
         if (clickedCell && clickedCell.image) {
             selectedCell = clickedCell
             selectedPiece = clickedCell.image
@@ -316,6 +379,14 @@ for (let i = 0; i < 8; i++) {
             dropCell.image = selectedPiece
             dropCell.tag = selectedTag
             selectedCell.tag = null
+
+            await promotePawn(dropCell, selectedTag)
+            
+            if(currentPlayer === "white"){
+                currentPlayer = "black"
+            }else{
+                currentPlayer = "white"
+            }
         } else {
             // Invalid move - move back
             selectedCell.image = selectedPiece
