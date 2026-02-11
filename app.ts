@@ -318,12 +318,20 @@ update = async () => {
         
         if (dropCell && canPieceMove(selectedCell, dropCell)) {
             // Valid move
+            dropCell.image = null
+            dropCell.tag = null
+           
             dropCell.image = selectedPiece
             dropCell.tag = selectedTag
             selectedCell.tag = null
 
             await promotePawn(dropCell, selectedTag)
-            
+            clear()
+            rectangle(1, 1, W, H, selectedColour)
+            board.draw()
+            labelBoard()
+
+
             if(currentPlayer === "white"){
                 currentPlayer = "black"
             }else{
@@ -331,11 +339,13 @@ update = async () => {
             }
         } else {
             // Invalid move - move back
-            selectedCell.image = selectedPiece
+            if (selectedCell){
+                selectedCell.image = selectedPiece}
         }
         
         // Reset colour
-        selectedCell.color = originalColor
+        if(selectedCell){
+            selectedCell.color = originalColor}
         
         // Reset
         dragging = false
