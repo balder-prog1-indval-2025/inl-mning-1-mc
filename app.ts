@@ -1,192 +1,11 @@
-import { labelBoard, colourBoard, pieceSetup, loadBackgrounds} from "./app2"
+import {labelBoard, colourBoard, pieceSetup, loadBackgrounds} from "./board"
+import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove } from "./rules"
 
 let board = new Grid(8, 8, 350, 40, 500, 500)
 let backgrounds: Grid = loadBackgrounds()
 
 colourBoard(board)
 pieceSetup(board)
-
-// Movement rules
-
-function canRookMove(from: any, to: any): boolean {
-    let fromRow = from.row
-    let fromColumn = from.column
-    let toRow = to.row
-    let toColumn = to.column
-    
-    // Must go straight
-    if (fromRow!== toRow && fromColumn !== toColumn) {
-        return false
-    }
-    
-    // Can not take own pieces
-    if (to.tag && to.tag.player === from.tag.player) {
-        return false
-    }
-    
-    // The way must be empty
-    if (fromRow === toRow) {
-        // Goes horisontally
-        let start = Math.min(fromColumn, toColumn) + 1
-        let slut = Math.max(fromColumn, toColumn)
-        for (let k = start; k < slut; k++) {
-            if (board.cell(fromRow, k).image) return false
-        }
-    } else {
-        // Goes vertically
-        let start = Math.min(fromRow, toRow) + 1
-        let slut = Math.max(fromRow, toRow)
-        for (let r = start; r < slut; r++) {
-            if (board.cell(r, fromColumn).image) return false
-        }
-    }
-    
-    return true
-}
-
-
-
-function canBishopMove(from: any, to: any): boolean {
-    let fromRow = from.row
-    let fromColumn = from.column
-    let toRow = to.row
-    let toColumn = to.column
-    
-    // Has to go diagonal
-    let rowDifference = Math.abs(toRow - fromRow)
-    let columnDifference = Math.abs(toColumn - fromColumn)
-    
-    if (rowDifference !== columnDifference) {
-        return false
-    }
-    
-    // Can not take own pieces
-    if (to.tag && to.tag.player === from.tag.player) {
-        return false
-    }
-    
-    // The way must be ampty
-    let rowDirection = toRow > fromRow ? 1 : -1
-    let columnDirection = toColumn > fromColumn ? 1 : -1
-    
-    let r = fromRow + rowDirection
-    let k = fromColumn + columnDirection
-    
-    while (r !== toRow && k !== toColumn) {
-        if (board.cell(r, k).image) return false
-        r += rowDirection
-        k += columnDirection
-    }
-    
-    return true
-}
-
-function canQueenMove(from: any, to: any): boolean {
-    return canRookMove(from, to) || canBishopMove(from, to)
-}
-
-function canKnightMove(from: any, to: any): boolean {
-    let fromRow = from.row
-    let fromColumn = from.column
-    let toRow = to.row
-    let toColumn = to.column
-   
-    let rowDifference = Math.abs(toRow - fromRow)
-    let columnDifference = Math.abs(toColumn - fromColumn)
-   
-    let isL = (rowDifference === 2 && columnDifference === 1) ||
-                  (rowDifference === 1 && columnDifference === 2)
-   
-    if (!isL) {
-        return false
-    }
-   
-    if (to.tag && to.tag.player === from.tag.player) {
-        return false
-    }
-   
-    return true
-}
-
-function canKingMove(from: any, to: any): boolean {
-    let fromRow = from.row
-    let fromColumn = from.column
-    let toRow = to.row
-    let toColumn = to.column
-    
-    let rowDifference = Math.abs(toRow - fromRow)
-    let columnDifference = Math.abs(toColumn - fromColumn)
-     
-    if (rowDifference > 1 || columnDifference > 1) {
-        return false
-    }
-    
-    if (to.tag && to.tag.player === from.tag.player) {
-        return false
-    }
-    
-    return true
-}
-
-function canPawnMove(from: any, to: any): boolean {
-    let fromRow = from.row
-    let fromColumn = from.column
-    let toRow = to.row
-    let toColumn = to.column
-    
-    let colour = from.tag.player
-    let direction = colour === "white" ? -1 : 1
-    
-    // Go straight forward in column
-    if (fromColumn === toColumn && toRow === fromRow + direction) {
-        if (to.image) return false
-        return true
-    }
-    
-    // Go straight forward 2 tiles (first move)
-    let startRow = colour === "white" ? 6 : 1
-    if (fromRow === startRow && fromColumn === toColumn && toRow === fromRow + 2 * direction) {
-        if (to.image) return false
-        if (board.cell(fromRow + direction, fromColumn).image) return false
-        return true
-    }
-    
-    // Take diagonally
-    if (Math.abs(toColumn - fromColumn) === 1 && toRow === fromRow + direction) {
-        if (to.tag && to.tag.player !== colour && to.image) {
-            return true
-        }
-        return false
-    }
-    // Om den kommer till slutet kan man byta pjäs
-    //switch ku
-    
-    return false
-}
-
-function canPieceMove(from: any, to: any): boolean {
-    if (!from.tag || !from.tag.piece) {
-        return false
-    }
-    
-    let typ = from.tag.piece
-    
-    if (typ === "rook") {
-        return canRookMove(from, to)
-    } else if (typ === "bishop") {
-        return canBishopMove(from, to)
-    } else if (typ === "queen") {
-        return canQueenMove(from, to)
-    } else if (typ === "knight") {
-        return canKnightMove(from, to)
-    } else if (typ === "king") {
-        return canKingMove(from, to)
-    } else if (typ === "pawn") {
-        return canPawnMove(from, to)
-    }
-    
-    return false
-}
 
 async function promotePawn(dropCell: any, selectedTag: any) {
     // Check if it's a pawn
@@ -249,7 +68,6 @@ async function promotePawn(dropCell: any, selectedTag: any) {
         }
     }
 }
-
 
 // Game logic
 
@@ -333,17 +151,18 @@ update = async () => {
             // Invalid move - move back
             selectedCell.image = selectedPiece
         }
-        
+        console.log (board.cell(1,1).image)
+
         // Reset colour
-        selectedCell.color = originalColor
-        
+        if (selectedCell != null) {
+            selectedCell.color = originalColor
+        }
         // Reset
         dragging = false
         selectedCell = null
         selectedPiece = null
         selectedTag = null
     }
-    
     
 }
 
