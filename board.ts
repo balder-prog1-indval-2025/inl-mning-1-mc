@@ -11,7 +11,7 @@ export function labelBoard(): any{
     }
 }
 
-export function colourBoard(board): any{
+export function colorBoard(board): any{
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if ((i + j) % 2 === 0) {
@@ -93,7 +93,7 @@ export async function pieceSetup (board): Promise<void>{
     }
 }
 
-// Colours
+// Colors
 let pink = "#f5d7e6"
 let yellow = "#fcfcdc"
 let green = "#d7f5df"

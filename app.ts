@@ -1,10 +1,10 @@
-import {labelBoard, colourBoard, pieceSetup, loadBackgrounds} from "./board"
+import {labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
 import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove } from "./rules"
 
 let board = new Grid(8, 8, 350, 40, 500, 500)
 let backgrounds: Grid = loadBackgrounds()
 
-colourBoard(board)
+colorBoard(board)
 pieceSetup(board)
 
 async function promotePawn(dropCell: any, selectedTag: any) {
@@ -78,7 +78,7 @@ let originalColor: string = ""
 let dragging = false
 
 let selectedBackground: any = null
-let selectedColour: any = "white"
+let selectedColor: any = "white"
 
 //Turn managment
 let currentPlayer = "white" 
@@ -87,14 +87,14 @@ update = async () => {
     board.draw()
     labelBoard()
     loadBackgrounds()
-    rectangle(1, 1, W, H, selectedColour)
+    rectangle(1, 1, W, H, selectedColor)
 
     // Picking background
     if (mouse.left) {
         selectedBackground = backgrounds.cellFromPoint(mouse.x, mouse.y)
         if (selectedBackground) {
-            selectedColour = selectedBackground.color
-            rectangle(1, 1, W, H, "selecetdColour")
+            selectedColor = selectedBackground.color
+            rectangle(1, 1, W, H, "selecetdColor")
         }
     }
 
@@ -106,6 +106,7 @@ update = async () => {
     if (mouse.left && !dragging) {
         let clickedCell = board.cellFromPoint(mouse.x, mouse.y)
         if (clickedCell && clickedCell.image && clickedCell.tag){
+            // Turn reminder
             if (clickedCell.tag.player !== currentPlayer){
                 text("It's " + currentPlayer+ "'s turn!!",20, 110, 26, "#913F74")
                 return}
@@ -153,7 +154,7 @@ update = async () => {
         }
         console.log (board.cell(1,1).image)
 
-        // Reset colour
+        // Reset color
         if (selectedCell != null) {
             selectedCell.color = originalColor
         }
