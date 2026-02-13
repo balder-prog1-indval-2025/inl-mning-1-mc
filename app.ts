@@ -263,8 +263,12 @@ let selectedBackground: any = null
 let selectedColour: any = "white"
 
 //Turn managment
+let isPromoting = false
 let currentPlayer = "white" 
 update = async () => {
+    if(isPromoting){
+        return}
+
     clear()
     board.draw()
     labelBoard()
@@ -317,21 +321,27 @@ update = async () => {
         let dropCell = board.cellFromPoint(mouse.x, mouse.y)
         
         if (dropCell && canPieceMove(selectedCell, dropCell)) {
-            // Valid move
+           //Tar bort allt vid the destination
             dropCell.image = null
-            dropCell.tag = null
-           
+            dropCell.tag = null   
+            //pjäsen flyttas
             dropCell.image = selectedPiece
             dropCell.tag = selectedTag
+            //Tar bort från og cell
+            selectedCell.image= null
             selectedCell.tag = null
-
+            //Promotion!! ৻(  •̀ ᗜ •́  ৻)
+            isPromoting = true
             await promotePawn(dropCell, selectedTag)
+            isPromoting= false
+            //Forcing to redaraw everything (just in case). muahahaa ⎛⎝( ` ᢍ ´ )⎠⎞
             clear()
             rectangle(1, 1, W, H, selectedColour)
             board.draw()
             labelBoard()
+            loadBackgrounds()
 
-
+             // Valid move
             if(currentPlayer === "white"){
                 currentPlayer = "black"
             }else{
@@ -348,6 +358,7 @@ update = async () => {
             selectedCell.color = originalColor}
         
         // Reset
+        
         dragging = false
         selectedCell = null
         selectedPiece = null
@@ -356,4 +367,5 @@ update = async () => {
     
     
 }
+
 
