@@ -45,7 +45,6 @@ function canRookMove(from: any, to: any): boolean {
 }
 
 
-
 function canBishopMove(from: any, to: any): boolean {
     let fromRow = from.row
     let fromColumn = from.column
@@ -249,6 +248,7 @@ async function promotePawn(dropCell: any, selectedTag: any) {
         }
     }
 }
+
 
 
 // Game logic
