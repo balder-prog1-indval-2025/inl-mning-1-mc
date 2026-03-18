@@ -71,24 +71,23 @@ async function promotePawn(dropCell: any, selectedTag: any) {
 
 
 function checkForWinner(){
-    let whitekingalive = false
-    let blackkingalive=false
+    let whiteKingAlive = false
+    let blackKingAlive = false
 
-    for(let r = 0; r<8; r++){
-        for(let c = 0 ; c<8; c++){
+    for(let r = 0; r<8; r++) {
+        for(let c = 0 ; c<8; c++) {
             let cell= board.cell(r,c)
-            if (cell.tag&&cell.tag.piece === "king"){
-                if(cell.tag.player==="white") whitekingalive=true
-                if(cell.tag.player==="black") blackkingalive=true
+            if (cell.tag&&cell.tag.piece === "king") {
+                if(cell.tag.player==="white") whiteKingAlive = true
+                if(cell.tag.player==="black") blackKingAlive = true
             }
         }
     }
-    if(!whitekingalive){
+    if(!whiteKingAlive) {
         clear()
         text("BLACK WINS🤩", 300, 300, 90, "#D64279")
-
     }
-    if(!blackkingalive){
+    if(!blackKingAlive) {
         clear()
         text("WHITE WINS🤩", 300, 300, 90, "#D64279")
     }
