@@ -227,3 +227,4 @@ export function canPieceMove(from: any, to: any): boolean {
     
     return false
 }
+

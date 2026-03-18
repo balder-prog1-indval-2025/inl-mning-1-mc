@@ -70,6 +70,38 @@ async function promotePawn(dropCell: any, selectedTag: any) {
 }
 
 
+function checkforwinner(){
+    let whitekingalive = false
+    let blackkingalive=false
+
+    for(let r = 0; r<8; r++){
+        for(let c = 0 ; c<8; c++){
+            let cell= board.cell(r,c)
+            if (cell.tag&&cell.tag.piece === "king"){
+                if(cell.tag.player==="white") whitekingalive=true
+                if(cell.tag.player==="black") blackkingalive=true
+            }
+        }
+    }
+    if(!whitekingalive)/*{
+        write("White wins! 🤩")
+        
+    }*/{
+        clear()
+        text("BLACK WINS🤩", 300, 300, 90, "#D64279")
+
+    }
+    if(!blackkingalive)/*{
+        write("black wins!")
+       
+    }*/{
+        clear()
+        text("WHITE WINS🤩", 300, 300, 90, "#D64279")
+    }
+
+}
+
+
 // Game logic
 
 let selectedCell: any = null
@@ -85,6 +117,7 @@ let selectedColor: any = "white"
 let isPromoting = false
 let currentPlayer = "white" 
 update = async () => {
+
     if(isPromoting){
         return}
 
@@ -150,16 +183,17 @@ update = async () => {
             //Tar bort från og cell
             selectedCell.image= null
             selectedCell.tag = null
-            //Promotion!! ৻(  •̀ ᗜ •́  ৻)
+            //Promotion!!
             isPromoting = true
             await promotePawn(dropCell, selectedTag)
             isPromoting= false
-            //Forcing to redaraw everything (just in case). muahahaa ⎛⎝( ` ᢍ ´ )⎠⎞
+            //Forcing to redaraw everything (just in case).''
             clear()
             rectangle(1, 1, W, H, selectedColor)
             board.draw()
             labelBoard()
             loadBackgrounds()
+            
 
              // Valid move
             if(currentPlayer === "white"){
@@ -172,6 +206,8 @@ update = async () => {
             if (selectedCell){
                 selectedCell.image = selectedPiece}
         }
+    
+        
         
         // Reset colour
         selectedCell.color = originalColor
@@ -183,5 +219,5 @@ update = async () => {
         selectedPiece = null
         selectedTag = null
     }
-    
+    checkforwinner()
 }
