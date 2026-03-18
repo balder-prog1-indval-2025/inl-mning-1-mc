@@ -70,7 +70,7 @@ async function promotePawn(dropCell: any, selectedTag: any) {
 }
 
 
-function checkforwinner(){
+function checkForWinner(){
     let whitekingalive = false
     let blackkingalive=false
 
@@ -83,18 +83,12 @@ function checkforwinner(){
             }
         }
     }
-    if(!whitekingalive)/*{
-        write("White wins! 🤩")
-        
-    }*/{
+    if(!whitekingalive){
         clear()
         text("BLACK WINS🤩", 300, 300, 90, "#D64279")
 
     }
-    if(!blackkingalive)/*{
-        write("black wins!")
-       
-    }*/{
+    if(!blackkingalive){
         clear()
         text("WHITE WINS🤩", 300, 300, 90, "#D64279")
     }
@@ -219,5 +213,5 @@ update = async () => {
         selectedPiece = null
         selectedTag = null
     }
-    checkforwinner()
+    checkForWinner()
 }
