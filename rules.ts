@@ -14,7 +14,7 @@ export function canRookMove(from: any, to: any): boolean {
     let toRow = to.row
     let toColumn = to.column
     
-    // Must go straight
+    // Go straight
     if (fromRow!== toRow && fromColumn !== toColumn) {
         return false
     }
@@ -26,14 +26,14 @@ export function canRookMove(from: any, to: any): boolean {
     
     // The way must be empty
     if (fromRow === toRow) {
-        // Goes horisontally
+        // Go horisontally
         let start = Math.min(fromColumn, toColumn) + 1
         let end = Math.max(fromColumn, toColumn)
         for (let k = start; k < end; k++) {
             if (board.cell(fromRow, k).image) return false
         }
     } else {
-        // Goes vertically
+        // Go vertically
         let start = Math.min(fromRow, toRow) + 1
         let end = Math.max(fromRow, toRow)
         for (let r = start; r < end; r++) {
@@ -57,7 +57,7 @@ export function canBishopMove(from: any, to: any): boolean {
     let toRow = to.row
     let toColumn = to.column
     
-    // Has to go diagonal
+    // Go diagonally
     let rowDifference = Math.abs(toRow - fromRow)
     let columnDifference = Math.abs(toColumn - fromColumn)
     
@@ -170,7 +170,7 @@ export function canPawnMove(from: any, to: any): boolean {
     let color = from.tag.player
     let direction = color === "white" ? -1 : 1
     
-    // Go straight forward in column
+    // Go straight in column
     if (fromColumn === toColumn && toRow === fromRow + direction) {
         if (to.image) return false
         return true
@@ -191,9 +191,7 @@ export function canPawnMove(from: any, to: any): boolean {
         }
         return false
     }
-    // If it comes to the end it can change piece
-    //switch ku
-    
+
     return false
 }
 
@@ -228,3 +226,26 @@ export function canPieceMove(from: any, to: any): boolean {
     return false
 }
 
+export function checkForWinner(){
+    let whiteKingAlive = false
+    let blackKingAlive = false
+
+    for(let r = 0; r<8; r++) {
+        for(let c = 0 ; c<8; c++) {
+            let cell= board.cell(r,c)
+            if (cell.tag&&cell.tag.piece === "king") {
+                if(cell.tag.player==="white") whiteKingAlive = true
+                if(cell.tag.player==="black") blackKingAlive = true
+            }
+        }
+    }
+    if(!whiteKingAlive) {
+        clear()
+        text("BLACK WINS🤩", 300, 300, 90, "#D64279")
+    }
+    if(!blackKingAlive) {
+        clear()
+        text("WHITE WINS🤩", 300, 300, 90, "#D64279")
+    }
+
+}

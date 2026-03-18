@@ -1,5 +1,5 @@
 import {labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
-import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove } from "./rules"
+import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove, checkForWinner } from "./rules"
 
 let board = new Grid(8, 8, 350, 40, 500, 500)
 let backgrounds: Grid = loadBackgrounds()
@@ -69,32 +69,6 @@ async function promotePawn(dropCell: any, selectedTag: any) {
     }
 }
 
-
-function checkForWinner(){
-    let whiteKingAlive = false
-    let blackKingAlive = false
-
-    for(let r = 0; r<8; r++) {
-        for(let c = 0 ; c<8; c++) {
-            let cell= board.cell(r,c)
-            if (cell.tag&&cell.tag.piece === "king") {
-                if(cell.tag.player==="white") whiteKingAlive = true
-                if(cell.tag.player==="black") blackKingAlive = true
-            }
-        }
-    }
-    if(!whiteKingAlive) {
-        clear()
-        text("BLACK WINS🤩", 300, 300, 90, "#D64279")
-    }
-    if(!blackKingAlive) {
-        clear()
-        text("WHITE WINS🤩", 300, 300, 90, "#D64279")
-    }
-
-}
-
-
 // Game logic
 
 let selectedCell: any = null
@@ -106,7 +80,7 @@ let dragging = false
 let selectedBackground: any = null
 let selectedColor: any = "white"
 
-//Turn managment
+// Turn managment
 let isPromoting = false
 let currentPlayer = "white" 
 update = async () => {
@@ -167,20 +141,20 @@ update = async () => {
         let dropCell = board.cellFromPoint(mouse.x, mouse.y)
         
         if (dropCell && canPieceMove(selectedCell, dropCell)) {
-           //Tar bort allt vid the destination
+           // Takes away everything on the destination
             dropCell.image = null
             dropCell.tag = null   
-            //pjäsen flyttas
+            // The piece moves
             dropCell.image = selectedPiece
             dropCell.tag = selectedTag
-            //Tar bort från og cell
+            // Takes away everything from original cell
             selectedCell.image= null
             selectedCell.tag = null
-            //Promotion!!
+            // Promotion
             isPromoting = true
             await promotePawn(dropCell, selectedTag)
             isPromoting= false
-            //Forcing to redaraw everything (just in case).''
+            // Redraw everything (just in case)
             clear()
             rectangle(1, 1, W, H, selectedColor)
             board.draw()
@@ -195,18 +169,15 @@ update = async () => {
                 currentPlayer = "white"
             }
         } else {
-            // Invalid move - move back
+            // Invalid move, move back
             if (selectedCell){
                 selectedCell.image = selectedPiece}
         }
     
-        
-        
-        // Reset colour
+        // Reset color
         selectedCell.color = originalColor
         
         // Reset
-        
         dragging = false
         selectedCell = null
         selectedPiece = null
