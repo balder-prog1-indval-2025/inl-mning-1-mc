@@ -1,13 +1,18 @@
+let board = new Grid(8, 8, 380, 40, 500, 500)
+
+export function getBoard(): any {
+    return board
+}
 
 export function labelBoard(): any{
     // Column labels (A-H)
     for (let i = 65; i <= 72; i++) {
         let x = i - 65
-        text(String.fromCharCode(i), 374 + x * 62, 35, 25)
+        text(String.fromCharCode(i), 404 + x * 62, 35, 25)
     }
     // Row labels (1-8)
     for (let i = 0; i < 8; i++) {
-        text(i + 1, 332, 76 + i * 63, 25)
+        text(i + 1, 362, 76 + i * 63, 25)
     }
 }
 

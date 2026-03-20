@@ -1,5 +1,7 @@
+import { getBoard, pieceSetup } from "./board"
 
-let board = new Grid(8, 8, 350, 40, 500, 500)
+let board = getBoard()
+pieceSetup(board)
 
 /**
  * Allows the rook to move if the move is straight,
@@ -226,24 +228,23 @@ export function canPieceMove(from: any, to: any): boolean {
     return false
 }
 
-export function checkForWinner(){
+export function checkForWinner() {
     let whiteKingAlive = false
     let blackKingAlive = false
-
-    for(let r = 0; r<8; r++) {
-        for(let c = 0 ; c<8; c++) {
-            let cell= board.cell(r,c)
-            if (cell.tag&&cell.tag.piece === "king") {
-                if(cell.tag.player==="white") whiteKingAlive = true
-                if(cell.tag.player==="black") blackKingAlive = true
+    for (let r = 0; r<8; r++) {
+        for (let c = 0 ; c<8; c++) {
+            let cell = board.cell(r, c)
+            if (cell.tag && cell.tag.piece === "king") {
+                if(cell.tag.player === "white") whiteKingAlive = true
+                if(cell.tag.player === "black") blackKingAlive = true
             }
         }
     }
-    if(!whiteKingAlive) {
+    if (!whiteKingAlive) {
         clear()
         text("BLACK WINS🤩", 300, 300, 90, "#D64279")
     }
-    if(!blackKingAlive) {
+    if (!blackKingAlive) {
         clear()
         text("WHITE WINS🤩", 300, 300, 90, "#D64279")
     }

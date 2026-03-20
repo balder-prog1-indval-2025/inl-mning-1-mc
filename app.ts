@@ -1,11 +1,11 @@
-import {labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
+import {getBoard, labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
 import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove, checkForWinner } from "./rules"
 
-let board = new Grid(8, 8, 350, 40, 500, 500)
+let board = getBoard()
 let backgrounds: Grid = loadBackgrounds()
 
 colorBoard(board)
-pieceSetup(board)
+await pieceSetup(board)
 
 async function promotePawn(dropCell: any, selectedTag: any) {
     // Check if it's a pawn
@@ -84,16 +84,16 @@ let selectedColor: any = "white"
 let isPromoting = false
 let currentPlayer = "white" 
 update = async () => {
-
-    if(isPromoting){
-        return}
+    if (isPromoting) {
+        return 
+    }
 
     clear()
     board.draw()
     labelBoard()
     loadBackgrounds()
     rectangle(1, 1, W, H, selectedColor)
-
+    
     // Picking background
     if (mouse.left) {
         selectedBackground = backgrounds.cellFromPoint(mouse.x, mouse.y)
@@ -161,7 +161,6 @@ update = async () => {
             labelBoard()
             loadBackgrounds()
             
-
              // Valid move
             if(currentPlayer === "white"){
                 currentPlayer = "black"
