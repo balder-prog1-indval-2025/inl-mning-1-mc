@@ -228,25 +228,192 @@ export function canPieceMove(from: any, to: any): boolean {
     return false
 }
 
-export function checkForWinner() {
-    let whiteKingAlive = false
-    let blackKingAlive = false
-    for (let r = 0; r<8; r++) {
-        for (let c = 0 ; c<8; c++) {
+export function isKingInCheck(player) {
+    let king = null
+    let board = getBoard()
+
+    // Find the king
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
             let cell = board.cell(r, c)
-            if (cell.tag && cell.tag.piece === "king") {
-                if(cell.tag.player === "white") whiteKingAlive = true
-                if(cell.tag.player === "black") blackKingAlive = true
+            if (cell.tag && cell.tag.player === player && cell.tag.piece === "king") {
+                king = cell
             }
         }
     }
+
+    if (!king) return false
+
+    let kr = king.row
+    let kc = king.column
+
+    // Knight attacks
+    const knightMoves = [
+        [2,1],[2,-1],[-2,1],[-2,-1],
+        [1,2],[1,-2],[-1,2],[-1,-2]
+    ]
+    for (let [dr, dc] of knightMoves) {
+        let r = kr + dr, c = kc + dc
+        if (r>=0 && r<8 && c>=0 && c<8) {
+            let cell = board.cell(r,c)
+            if (cell.tag && cell.tag.player !== player && cell.tag.piece === "knight") {
+                return true
+            }
+        }
+    }
+
+    // Pawn attacks
+    let direction = player === "white" ? -1 : 1
+    for (let dc of [-1, 1]) {
+        let r = kr + direction
+        let c = kc + dc
+        if (r>=0 && r<8 && c>=0 && c<8) {
+            let cell = board.cell(r,c)
+            if (cell.tag && cell.tag.player !== player && cell.tag.piece === "pawn") {
+                return true
+            }
+        }
+    }
+
+    // King adjacency
+    for (let dr=-1; dr<=1; dr++) {
+        for (let dc=-1; dc<=1; dc++) {
+            if (dr===0 && dc===0) continue
+            let r = kr+dr, c = kc+dc
+            if (r>=0 && r<8 && c>=0 && c<8) {
+                let cell = board.cell(r,c)
+                if (cell.tag && cell.tag.player !== player && cell.tag.piece === "king") {
+                    return true
+                }
+            }
+        }
+    }
+
+    // Rook / Queen lines
+    const rookDirs = [[1,0],[-1,0],[0,1],[0,-1]]
+    for (let [dr,dc] of rookDirs) {
+        let r = kr+dr, c = kc+dc
+        while (r>=0 && r<8 && c>=0 && c<8) {
+            let cell = board.cell(r,c)
+            if (cell.tag) {
+                if (cell.tag.player !== player &&
+                    (cell.tag.piece === "rook" || cell.tag.piece === "queen")) {
+                    return true
+                }
+                break
+            }
+            r+=dr; c+=dc
+        }
+    }
+
+    // Bishop / Queen diagonals
+    const bishopDirs = [[1,1],[1,-1],[-1,1],[-1,-1]]
+    for (let [dr,dc] of bishopDirs) {
+        let r = kr+dr, c = kc+dc
+        while (r>=0 && r<8 && c>=0 && c<8) {
+            let cell = board.cell(r,c)
+            if (cell.tag) {
+                if (cell.tag.player !== player &&
+                    (cell.tag.piece === "bishop" || cell.tag.piece === "queen")) {
+                    return true
+                }
+                break
+            }
+            r+=dr; c+=dc
+        }
+    }
+
+    return false
+}
+
+export function hasLegalMove(player) {
+    let board = getBoard()
+
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+
+            let from = board.cell(r, c)
+
+            if (from.tag && from.tag.player === player) {
+
+                for (let r2 = 0; r2 < 8; r2++) {
+                    for (let c2 = 0; c2 < 8; c2++) {
+
+                        let to = board.cell(r2, c2)
+
+                        if (canPieceMove(from, to)) {
+
+                            // simulate move
+                            let oldToImage = to.image
+                            let oldToTag = to.tag
+                            let oldFromImage = from.image
+                            let oldFromTag = from.tag
+
+                            to.image = oldFromImage
+                            to.tag = oldFromTag
+                            from.image = null
+                            from.tag = null
+
+                            let legal = !isKingInCheck(player)
+
+                            // undo
+                            to.image = oldToImage
+                            to.tag = oldToTag
+                            from.image = oldFromImage
+                            from.tag = oldFromTag
+
+                            if (legal) return true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return false
+}
+
+export function checkForWinner(player) {
+    let board = getBoard()
+
+    let whiteKingAlive = false
+    let blackKingAlive = false
+
+    // Check if kings exist
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            let cell = board.cell(r, c)
+            if (cell.tag && cell.tag.piece === "king") {
+                if (cell.tag.player === "white") whiteKingAlive = true
+                if (cell.tag.player === "black") blackKingAlive = true
+            }
+        }
+    }
+
+    // King captured
     if (!whiteKingAlive) {
         clear()
-        text("BLACK WINS🤩", 300, 300, 90, "#D64279")
+        text("BLACK WINS 🤩", 300, 300, 90, "#D64279")
+        return
     }
     if (!blackKingAlive) {
         clear()
-        text("WHITE WINS🤩", 300, 300, 90, "#D64279")
+        text("WHITE WINS 🤩", 300, 300, 90, "#D64279")
+        return
     }
 
+    // Checkmate
+    if (isKingInCheck(player) && !hasLegalMove(player)) {
+        clear()
+        text("CHECKMATE!", 300, 300, 90, "red")
+        text((player === "white" ? "BLACK" : "WHITE") + " WINS 🤩", 300, 380, 60, "#D64279")
+        return
+    }
+
+    // Stalemate
+    if (!isKingInCheck(player) && !hasLegalMove(player)) {
+        clear()
+        text("STALEMATE — DRAW!", 300, 300, 90, "gray")
+        return
+    }
 }
