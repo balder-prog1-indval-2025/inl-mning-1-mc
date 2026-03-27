@@ -230,7 +230,6 @@ export function canPieceMove(from: any, to: any): boolean {
 
 export function isKingInCheck(player) {
     let king = null
-    let board = getBoard()
 
     // Find the king
     for (let r = 0; r < 8; r++) {
@@ -343,7 +342,7 @@ export function hasLegalMove(player) {
 
                         if (canPieceMove(from, to)) {
 
-                            // simulate move
+                            // Simulate move
                             let oldToImage = to.image
                             let oldToTag = to.tag
                             let oldFromImage = from.image
@@ -356,7 +355,7 @@ export function hasLegalMove(player) {
 
                             let legal = !isKingInCheck(player)
 
-                            // undo
+                            // Undo
                             to.image = oldToImage
                             to.tag = oldToTag
                             from.image = oldFromImage
@@ -373,47 +372,60 @@ export function hasLegalMove(player) {
     return false
 }
 
-export function checkForWinner(player) {
-    let board = getBoard()
+function isInsufficientMaterial(board) {
+    let pieces = []
 
-    let whiteKingAlive = false
-    let blackKingAlive = false
-
-    // Check if kings exist
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
-            let cell = board.cell(r, c)
-            if (cell.tag && cell.tag.piece === "king") {
-                if (cell.tag.player === "white") whiteKingAlive = true
-                if (cell.tag.player === "black") blackKingAlive = true
-            }
+            const cell = board.cell(r, c)
+            if (cell.tag) pieces.push(cell.tag)
         }
     }
 
-    // King captured
-    if (!whiteKingAlive) {
-        clear()
-        text("BLACK WINS 🤩", 300, 300, 90, "#D64279")
-        return
-    }
-    if (!blackKingAlive) {
-        clear()
-        text("WHITE WINS 🤩", 300, 300, 90, "#D64279")
-        return
+    // Only kings
+    if (pieces.length === 2) return true
+
+    // King + minor piece vs King
+    if (pieces.length === 3) {
+        return pieces.some(p => p.piece === "bishop" || p.piece === "knight")
     }
 
+    // King + bishop vs King + bishop (same color squares)
+    if (pieces.length === 4) {
+        const bishops = pieces.filter(p => p.piece === "bishop")
+        if (bishops.length === 2) {
+            const colors = bishops.map(b => (b.squareColor)) // you must track this
+            return colors[0] === colors[1]
+        }
+    }
+
+    return false
+}
+
+
+export function checkForWinner(player: "white" | "black") {
+    const opponent = player === "white" ? "black" : "white"
+    let gameOver = false
+
+    const kingInCheck = isKingInCheck(player)
+    const legalMovesExist = hasLegalMove(player)
+
     // Checkmate
-    if (isKingInCheck(player) && !hasLegalMove(player)) {
+    if (kingInCheck && !legalMovesExist) {
         clear()
-        text("CHECKMATE!", 300, 300, 90, "red")
-        text((player === "white" ? "BLACK" : "WHITE") + " WINS 🤩", 300, 380, 60, "#D64279")
-        return
+        text("CHECKMATE!", 360, 275, 90, "#D64279")
+        text(opponent.toUpperCase() + " WINS 🤩", 360, 355, 90, "#D64279")
+        gameOver = true
+        return "checkmate"
     }
 
     // Stalemate
-    if (!isKingInCheck(player) && !hasLegalMove(player)) {
+    if (!kingInCheck && !legalMovesExist) {
         clear()
-        text("STALEMATE — DRAW!", 300, 300, 90, "gray")
-        return
+        text("STALEMATE — DRAW!", 360, 300, 60, "#D64279")
+        gameOver = true
+        return "stalemate"
     }
+
+    return null
 }

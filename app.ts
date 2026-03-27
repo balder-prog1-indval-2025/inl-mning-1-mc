@@ -81,9 +81,11 @@ let selectedBackground: any = null
 let selectedColor: any = "white"
 
 // Turn managment
+let gameOver = false
 let isPromoting = false
-let currentPlayer = "white" 
+let currentPlayer: "white" | "black" = "white"
 let gameMessage = ""
+
 update = async () => {
 
     if (isPromoting) {
@@ -175,7 +177,7 @@ update = async () => {
         
             } else {
         
-                // Move is legal → promotion
+                // Move is legal -->  promotion
                 isPromoting = true
                 await promotePawn(dropCell, oldFromTag)
                 isPromoting = false
@@ -188,7 +190,7 @@ update = async () => {
             }
         
         } else {
-            // Invalid move → put piece back
+            // Invalid move --> put piece back
             if (selectedCell) selectedCell.image = selectedPiece
         }
         
@@ -201,4 +203,6 @@ update = async () => {
         selectedPiece = null
         selectedTag = null
     }
+
+    checkForWinner(currentPlayer)
 }

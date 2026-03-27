@@ -30,7 +30,7 @@ export function colorBoard(board): any{
 }
 
 export async function pieceSetup (board): Promise<void>{
-    //White pieces setup
+    // White pieces setup
     let whiteRook = await fetchImage("chess/white_rook.png")
     board.cell(7, 0).image = whiteRook
     board.cell(7, 0).tag = { player: "white", piece: "rook" }
