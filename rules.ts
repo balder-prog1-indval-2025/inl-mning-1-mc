@@ -427,5 +427,11 @@ export function checkForWinner(player: "white" | "black") {
         return "stalemate"
     }
 
+    // Insuffiecient material
+    if (isInsufficientMaterial) {
+        clear()
+        text("INSUFFICIENT MATERIAL — DRAW!", 360, 300, 60, "#D64279")
+    }
+
     return null
 }

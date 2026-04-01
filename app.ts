@@ -70,7 +70,6 @@ async function promotePawn(dropCell, oldFromTag) {
 }
 
 // Game logic
-
 let selectedCell: any = null
 let selectedPiece: any = null
 let selectedTag: any = null
@@ -97,6 +96,7 @@ update = async () => {
     labelBoard()
     loadBackgrounds()
     rectangle(1, 1, W, H, selectedColor)
+    
     if (gameMessage !== "") {
         text("Illegal move:", 20, 110, 26, "#913F74")
         text("king would be in check!", 20, 135, 26, "#913F74")
