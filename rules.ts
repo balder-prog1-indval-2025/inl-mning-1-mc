@@ -24,7 +24,7 @@ export function canRookMove(from: any, to: any): boolean {
         return false
     }
     
-    // The way must be empty
+    // The way must be empty   
     if (fromRow === toRow) {
         // Go horisontally
         let start = Math.min(fromColumn, toColumn) + 1
@@ -126,7 +126,7 @@ export function canKnightMove(from: any, to: any): boolean {
    
     return true
 }
-
+   
 /**
  * Allows the king to move if the move is one tile to any side and
  * there is no piece from its side on the position.

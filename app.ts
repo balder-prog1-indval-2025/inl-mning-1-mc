@@ -86,7 +86,7 @@ let currentPlayer = "white"
 update = async () => {
 
     if(isPromoting){
-        return}
+           return}
 
     clear()
     board.draw()
