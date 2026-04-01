@@ -4,7 +4,7 @@ export function getBoard(): any {
     return board
 }
 
-export function labelBoard(): any{
+export function labelBoard(): any {
     // Column labels (A-H)
     for (let i = 65; i <= 72; i++) {
         let x = i - 65
@@ -16,7 +16,7 @@ export function labelBoard(): any{
     }
 }
 
-export function colorBoard(board): any{
+export function colorBoard(board): any {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             if ((i + j) % 2 === 0) {
@@ -29,7 +29,7 @@ export function colorBoard(board): any{
     
 }
 
-export async function pieceSetup (board): Promise<void>{
+export async function pieceSetup (board): Promise<void> {
     // White pieces setup
     let whiteRook = await fetchImage("chess/white_rook.png")
     board.cell(7, 0).image = whiteRook
@@ -106,7 +106,7 @@ let cyan = "#d0f5f1"
 let blue = "#cde1f7"
 let lavender = "#ecdcfc"
 
-export function loadBackgrounds (): Grid{
+export function loadBackgrounds (): Grid {
     let backgrounds = new Grid(7, 1, 1200, 40, 30, 120)
     backgrounds.cell(0, 0).color = pink
     backgrounds.cell(1, 0).color = yellow
