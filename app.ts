@@ -1,18 +1,18 @@
-import {labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
-import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove, checkForWinner } from "./rules"
+import {getBoard, labelBoard, colorBoard, pieceSetup, loadBackgrounds} from "./board"
+import {canRookMove, canBishopMove, canQueenMove, canKnightMove, canKingMove, canPawnMove, canPieceMove, isKingInCheck, checkForWinner } from "./rules"
 
-let board = new Grid(8, 8, 350, 40, 500, 500)
+let board = getBoard()
 let backgrounds: Grid = loadBackgrounds()
 
 colorBoard(board)
-pieceSetup(board)
+await pieceSetup(board)
 
-async function promotePawn(dropCell: any, selectedTag: any) {
-    // Check if it's a pawn
-    if (selectedTag.piece !== "pawn") {
-        return  // Not a pawn, do nothing
+async function promotePawn(dropCell, oldFromTag) {
+     // Check if it's a pawn
+     if (dropCell.tag.piece !== "pawn") { 
+        return
     }
-    
+
     // White pawn reaches row 0
     if (selectedTag.player === "white" && dropCell.row === 0) {
         let choice = await read("Promote to: queen, rook, knight, or bishop?")
@@ -81,19 +81,33 @@ let selectedBackground: any = null
 let selectedColor: any = "white"
 
 // Turn managment
+let gameOver = false
 let isPromoting = false
-let currentPlayer = "white" 
+let currentPlayer: "white" | "black" = "white"
+let gameMessage = ""
+
 update = async () => {
 
+<<<<<<< HEAD
     if(isPromoting){
            return}
+=======
+    if (isPromoting) {
+        return 
+    }
+>>>>>>> da939d1a245611706af5a0fa17aaee9ca008ed8c
 
     clear()
     board.draw()
     labelBoard()
     loadBackgrounds()
     rectangle(1, 1, W, H, selectedColor)
-
+    if (gameMessage !== "") {
+        text("Illegal move:", 20, 110, 26, "#913F74")
+        text("king would be in check!", 20, 135, 26, "#913F74")
+    }
+    
+    
     // Picking background
     if (mouse.left) {
         selectedBackground = backgrounds.cellFromPoint(mouse.x, mouse.y)
@@ -109,11 +123,12 @@ update = async () => {
 
     // Start dragging
     if (mouse.left && !dragging) {
+        gameMessage = ""
         let clickedCell = board.cellFromPoint(mouse.x, mouse.y)
         if (clickedCell && clickedCell.image && clickedCell.tag){
             // Turn reminder
             if (clickedCell.tag.player !== currentPlayer){
-                text("It's " + currentPlayer+ "'s turn!!",20, 110, 26, "#913F74")
+                text("It's " + currentPlayer+ "'s turn!!", 20, 110, 26, "#913F74")
                 return}
             }
 
@@ -141,39 +156,49 @@ update = async () => {
         let dropCell = board.cellFromPoint(mouse.x, mouse.y)
         
         if (dropCell && canPieceMove(selectedCell, dropCell)) {
-           // Takes away everything on the destination
-            dropCell.image = null
-            dropCell.tag = null   
-            // The piece moves
-            dropCell.image = selectedPiece
-            dropCell.tag = selectedTag
-            // Takes away everything from original cell
-            selectedCell.image= null
-            selectedCell.tag = null
-            // Promotion
-            isPromoting = true
-            await promotePawn(dropCell, selectedTag)
-            isPromoting= false
-            // Redraw everything (just in case)
-            clear()
-            rectangle(1, 1, W, H, selectedColor)
-            board.draw()
-            labelBoard()
-            loadBackgrounds()
-            
 
-             // Valid move
-            if(currentPlayer === "white"){
-                currentPlayer = "black"
-            }else{
-                currentPlayer = "white"
+            // Save old state
+            let oldDropImage = dropCell.image
+            let oldDropTag = dropCell.tag
+            let oldFromImage = selectedPiece
+            let oldFromTag = selectedTag
+        
+            // Make move temporarily
+            dropCell.image = oldFromImage
+            dropCell.tag = oldFromTag
+            selectedCell.image = null
+            selectedCell.tag = null
+        
+            // Check if king is in check
+            if (isKingInCheck(currentPlayer)) {
+        
+                // Undo move
+                dropCell.image = oldDropImage
+                dropCell.tag = oldDropTag
+                selectedCell.image = oldFromImage
+                selectedCell.tag = oldFromTag
+        
+                gameMessage = "Illegal move: king would be in check!"
+        
+            } else {
+        
+                // Move is legal -->  promotion
+                isPromoting = true
+                await promotePawn(dropCell, oldFromTag)
+                isPromoting = false
+        
+                // Switch turn
+                currentPlayer = currentPlayer === "white" ? "black" : "white"
+        
+                // Checkmate / stalemate / king captured
+                checkForWinner(currentPlayer)
             }
+        
         } else {
-            // Invalid move, move back
-            if (selectedCell){
-                selectedCell.image = selectedPiece}
+            // Invalid move --> put piece back
+            if (selectedCell) selectedCell.image = selectedPiece
         }
-    
+        
         // Reset color
         selectedCell.color = originalColor
         
@@ -183,5 +208,6 @@ update = async () => {
         selectedPiece = null
         selectedTag = null
     }
-    checkForWinner()
+
+    checkForWinner(currentPlayer)
 }
